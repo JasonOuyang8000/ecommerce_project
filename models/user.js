@@ -1,3 +1,5 @@
+const { generatePassword } = require('../helpers/helperFunctions');
+
 'use strict';
 const {
   Model
@@ -11,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.user.hasMany(models.cart);
     }
   };
   user.init({
@@ -22,5 +25,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'user',
   });
+
+  user.addHook('afterValidate', async(user,options) => {
+    const hashedPassword = generatePassword(user.password);
+    user.password = hashedPassword
+  })
+
   return user;
 };
