@@ -6,6 +6,7 @@ const userController = {};
 userController.create = async (req, res) => {
     try {
         const { username, email, password } = req.body;
+
         
         const createdUser = await user.create({
             username,
@@ -20,7 +21,8 @@ userController.create = async (req, res) => {
             userToken,
             user: {
                 id: createdUser.id,
-                username: createdUser.username
+                username: createdUser.username,
+                email: createdUser.email,
             }
         });
     }
@@ -38,11 +40,11 @@ userController.create = async (req, res) => {
 }
 
 userController.login = async (req,res) => {
-    const { username, password} = req.body;
+    const { email, password} = req.body;
     try {
         const findUser = await user.findOne({
             where: {
-                username
+                email
             }
         });
     
@@ -52,7 +54,8 @@ userController.login = async (req,res) => {
                 userToken,
                 user: {
                     id: findUser.id,
-                    username: findUser.username
+                    username: findUser.username,
+                    email: findUser.email
                 }
             });
         }
@@ -83,7 +86,8 @@ userController.verify = (req, res) => {
         res.status(200).json({
             user: {
                 id: userFind.id,
-                username: userFind.username
+                username: userFind.username,
+                email: userFind.email
             }
         });
     }
