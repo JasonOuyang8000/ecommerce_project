@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       models.item.hasMany(models.item_image,{as: 'images'});
+      models.item.hasMany(models.cart);
     }
   };
   item.init({
