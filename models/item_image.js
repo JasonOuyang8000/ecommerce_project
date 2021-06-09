@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.item_image.belongsTo(models.item,{onDelete: 'CASCADE'});
     }
   };
   item_image.init({

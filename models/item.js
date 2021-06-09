@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.item.hasMany(models.item_image,{as: 'images'});
     }
   };
   item.init({
@@ -18,10 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.TEXT,
     desc: DataTypes.TEXT,
     price: DataTypes.DECIMAL,
-    image: DataTypes.TEXT
   }, {
     sequelize,
-    modelName: 'items',
+    modelName: 'item',
   });
   return item;
 };

@@ -16,28 +16,81 @@ const currencyConversion = (symb, amt) => {
         return (amt * rate).toFixed(2);
 
     }
-
-
-
 }
 
-const seedData = async () => {
 
-    const response = await axios.get(`https://openapi.etsy.com/v2/listings/active?api_key=${process.env.KEY}&includes=Images&limit=100&offset=0`)
-    const items = response.data.results;
-    console.log(items.length);
-    for (const item of items) {
+
+const seedData = async (offset) => {
+    try {
+ 
+        const response = await axios.get(`https://openapi.etsy.com/v2/listings/active?api_key=${process.env.KEY}&includes=Images&limit=100&offset=${offset}`)
+        const items = response.data.results;
+    
+        for (const item of items) {
+            
+           
+            if (item["title"]) {
+              
+                const itemImages = item["Images"].map(image => ({image:image["url_fullxfull"]}));
+       
+                
+                const newItem = await models.item.create({
+                    uuid:item["listing_id"],
+                    name:item["title"],
+                    desc:item["description"],
+                    price: currencyConversion(item["currency_code"],item["price"]),
+                    images:itemImages,
+                }, {
+                    include: [
+                        {
+                            model: models.item_image,
+                            as: 'images'
+                        }
+                    ]
+                }
+                );
+
+              
+        
+               
+            }
+            
+            
+    
+            
+    
+    
+        }
+
+    }
+
+
+    catch(error) {
+        console.log(error);
+    }
+  
+}
+
+async function* asyncGenerator() {
+    let i = 0;
+    while (i < 10000) {
      
-
-        const item = await models.item.create({
-            uuid: item["listing_id"],
-            name: item["title"],
-            desc: item["description"],
-            price: currencyConversion(item["currency_code"],item["price"])
-        });
-
-
+      yield i += 100;
+         
     }
 }
 
-seedData();
+
+// seedData();
+
+
+(
+    async function() {
+        for await (let num of asyncGenerator()) {
+            await seedData(num);
+            await setTimeout(() => {
+
+            },5000)
+        }
+    }
+)();
