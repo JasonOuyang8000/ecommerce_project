@@ -1,10 +1,8 @@
 const express = require('express');
 const rowdyLogger = require('rowdy-logger');
 const { findUser } = require('./middlewears/userAuth');
-const cartRouter = require('./routers/CartRouter');
 const app = express();
 const port = process.env.PORT || 3001;
-const userRouter = require('./routers/UserRouter');
 require('dotenv').config()
 
 require('./models');
@@ -15,7 +13,13 @@ app.use(express.json());
 app.use(require('cors')());
 app.use(findUser);
 
+const userRouter = require('./routers/UserRouter');
 app.use('/user', userRouter);
+
+const itemRouter = require('./routers/ItemRouter')
+app.use('/item', itemRouter)
+
+const cartRouter = require('./routers/CartRouter');
 app.use('/cart', cartRouter);
 
 app.listen(port, () => {
