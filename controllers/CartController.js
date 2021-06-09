@@ -1,3 +1,6 @@
+
+
+const { Op } = require('sequelize');
 const models = require('../models');
 
 const cartController = {}
@@ -17,7 +20,22 @@ const cartController = {}
 // }
 cartController.getCart = async (req,res) => {
     try {
+        const cartItems = await req.userFind.getCarts({
+            where: {
+                quantity: {[Op.gt]:0},
+            },
+            include: {
+                model: models.item,
+                include: {
+                    model: models.item_image,
+                    as: 'images'
+                }
+            }
+        })
 
+        return res.json({
+            cartItems
+        });
     }
     catch(error) {
         if (error.message) {
@@ -55,7 +73,8 @@ cartController.updateCart = async(req,res) => {
         });
         
         if (createdCartItem) {
-           console.log('test');
+       
+    
 
             return res.json({
                 cartItem: createdCartItem,
@@ -63,9 +82,10 @@ cartController.updateCart = async(req,res) => {
         }
 
         else {
+        
            cartItem.quantity = req.body.quantity
 
-           await cartItem.reload();
+           await cartItem.save();
 
            return res.json({
                cartItem
