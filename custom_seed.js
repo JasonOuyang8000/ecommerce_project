@@ -31,7 +31,7 @@ const seedData = async (offset) => {
            
             if (item["title"]) {
               
-                const itemImages = item["Images"].map(image => ({image:image["url_fullxfull"]}));
+                const itemImages = item["Images"].map(image => ({image:image["url_570xN"]}));
        
                 
                 const newItem = await models.item.create({
