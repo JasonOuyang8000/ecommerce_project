@@ -20,4 +20,15 @@ itemController.getAll = async (req, res) => {
     }
 }
 
+itemController.getRandItems = async (req,res) => {
+    try {
+        
+    } 
+    catch (error) {
+        res.status(400).json({
+            message: 'Could not get all items',
+            error
+        })
+    }
+}
 module.exports = itemController
