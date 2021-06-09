@@ -1,3 +1,5 @@
+const { generatePassword } = require('../helpers/helperFunctions');
+
 'use strict';
 const {
   Model
@@ -22,5 +24,11 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'user',
   });
+
+  user.addHook('afterValidate', async(user,options) => {
+    const hashedPassword = generatePassword(user.password);
+    user.password = hashedPassword
+  })
+
   return user;
 };

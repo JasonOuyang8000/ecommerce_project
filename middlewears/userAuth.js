@@ -4,8 +4,11 @@ const models = require('./../models');
 const findUser = async (req, res, next) => {
     try {
 
-      if (req.headers.usertoken) {
-        const { id } = jwt.verify(req.headers.usertoken, process.env.SECRET);
+      if (req.headers.authorization) {
+        const token = req.headers.authorization.split(' ')[1];
+       
+        const { id } = jwt.verify(token, process.env.SECRET);
+      
         const user = await models.user.findOne({
           where: {
             id
@@ -21,8 +24,14 @@ const findUser = async (req, res, next) => {
   
       next();
     } catch (error) {
-      console.log(error)
-      res.status(400).json({ error: error.message })
+      if (error.message) {
+        return res.status(400).json({
+            error: error.message
+        })
+      }
+      return res.status(400).json({
+          error
+      })
     }
 }
 

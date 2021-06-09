@@ -1,35 +1,38 @@
-const { generatePassword, checkPassword, generateUserToken } = require('../helpers/helperFunctions');
+const { checkPassword, generateUserToken } = require('../helpers/helperFunctions');
 const { user } = require('../models/');
 
 const userController = {};
 
 userController.create = async (req, res) => {
     try {
-     
         const { username, email, password } = req.body;
         
-
-
-        const hashedPassword = generatePassword(password);
-     
         const createdUser = await user.create({
             username,
             email,
-            password: hashedPassword,
+            password,
         });
 
     
         const userToken = generateUserToken(createdUser.id, process.env.SECRET);
 
         res.status(201).json({
-            userToken
+            userToken,
+            user: {
+                id: createdUser.id,
+                username: createdUser.username
+            }
         });
     }
     catch(error) {
-        console.log(error);
-        res.status(400).json({
+        if (error.message) {
+            return res.status(400).json({
+                error: error.message
+            })
+        }
+        return res.status(400).json({
             error
-        });
+        })
     }
 
 }
@@ -45,8 +48,12 @@ userController.login = async (req,res) => {
     
         if (checkPassword(password, findUser.password)) {
             const userToken = generateUserToken(findUser.id, process.env.SECRET);
-            res.json({
-                userToken
+            return res.json({
+                userToken,
+                user: {
+                    id: findUser.id,
+                    username: findUser.username
+                }
             });
         }
 
@@ -58,7 +65,14 @@ userController.login = async (req,res) => {
     
     }
     catch (error) {
-        res.status({error});
+        if (error.message) {
+            return res.status(400).json({
+                error: error.message
+            })
+        }
+        return res.status(400).json({
+            error
+        })
     } 
 }
 
@@ -66,10 +80,22 @@ userController.verify = (req, res) => {
     try {
         const { userFind } = req;
 
-        res.status(200).json({});
+        res.status(200).json({
+            user: {
+                id: userFind.id,
+                username: userFind.username
+            }
+        });
     }
     catch (error) {
-
+        if (error.message) {
+            return res.status(400).json({
+                error: error.message
+            })
+        }
+        return res.status(400).json({
+            error
+        })
     }
 }
 
