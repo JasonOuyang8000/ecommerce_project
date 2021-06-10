@@ -5,7 +5,9 @@ const itemController = {}
 
 itemController.getAll = async (req, res) => {
     try {
-       const items = await models.item.findAll()
+       const items = await models.item.findAll({
+            include: 'images'
+       })
        
        res.status(200).json({
            message: 'All items found',
