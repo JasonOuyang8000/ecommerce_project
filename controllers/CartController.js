@@ -107,4 +107,48 @@ cartController.updateCart = async(req,res) => {
 }
 
 
+cartController.getCartItems = async (req,res) => {
+    try {
+        let { items } = req.query;
+
+    
+        
+        items = items.map(item => JSON.parse(item));
+
+        const itemIds = items.map(item => parseInt(Object.keys(item)[0]));
+        
+        console.log(itemIds)
+ 
+        
+        const allItems = await models.item.findAll({
+            where: {
+                id: {
+                    [Op.in] : itemIds
+                }
+            }
+        })
+
+
+    
+        
+        res.json({
+            items: allItems
+        });
+
+    }
+
+    catch(error) {
+        console.log(error);
+        if (error.message) {
+            return res.status(400).json({
+                error: error.message
+            })
+        }
+        return res.status(400).json({
+            error
+        })
+    }
+}
+
+
 module.exports = cartController;
