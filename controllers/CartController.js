@@ -125,6 +125,10 @@ cartController.getCartItems = async (req,res) => {
                 id: {
                     [Op.in] : itemIds
                 }
+            },
+            include: {
+                model: models.item_image,
+                as: 'images'
             }
         })
 
